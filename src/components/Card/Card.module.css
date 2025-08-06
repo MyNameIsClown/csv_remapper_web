@@ -1,0 +1,20 @@
+.card{
+    /* Content position */
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s ease-in-out;
+}
+.card:hover{
+    font-size: 1.3rem;
+    transition: all 0.1s ease-in-out;
+}
+.card--gradient{
+    background: linear-gradient(rgb(26, 92, 79), rgb(5, 31, 26));
+}
+.card--flat{
+    background-color: white;
+    color: rgb(5, 31, 26);
+}
