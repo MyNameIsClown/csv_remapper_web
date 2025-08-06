@@ -1,9 +1,14 @@
 import './Home.css'
 import Card from '../../components/Card/Card'
 import Footer from '../../components/Footer/Footer';
+import type { ChangeEvent } from 'react';
+import { uploadFile } from '../../utils/fileHandler'
 
-function uploadFile(){
-    console.log("Click")
+async function handleUploadInput(e: ChangeEvent<HTMLInputElement>){
+  const files = e.target.files;
+  if (files != null && files.length != 0) {
+    uploadFile(files[0])
+  }
 }
 export const cardInfo = [
     {
@@ -42,9 +47,8 @@ function Home(){
                     <p>
                     CSV Remapper is a powerful web tool designed to easily transform and manipulate CSV files using customizable mapping files. Streamline your data workflows and automate common CSV cleaning and transformation tasks.
                     </p>
-                    <button className='upload-btn' onClick={()=>uploadFile()}>
-                        UPLOAD FILE
-                    </button>
+                    <label htmlFor="uploadBtn" className='upload-btn'>UPLOAD FILE</label>
+                    <input id='uploadBtn' type='file' accept='.csv,.tsv,.json' onChange={(e) => handleUploadInput(e)}/>
                 </div>
                 <div className='card-grid'>
                     {cardInfo.map(info => (
