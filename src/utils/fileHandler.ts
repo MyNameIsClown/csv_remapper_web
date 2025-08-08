@@ -1,6 +1,6 @@
 import { fetchHandler } from "./fetchHandler.ts";
 
-function getFileId(){
+export function getFileId(){
   return localStorage.getItem("file-id")
 }
 function saveFileId(file_id:string){
@@ -36,8 +36,18 @@ export async function uploadFile (uploadFile:File){
       method: "POST",
       body: fileData,
     });
-    console.log(response)
     saveFileId(response["file_id"])
+    return response
+  } catch (err) {
+    console.error(err);
+  }
+};
+export async function getFileInfo (file_id:string){
+  try {
+    const response = await fetchHandler(`/csv-file/${file_id}`, {
+      method: "GET",
+    });
+    return response
   } catch (err) {
     console.error(err);
   }

@@ -58,6 +58,7 @@
     color: rgb(5, 31, 26);
     background-color: rgb(97, 213, 190);
     transition: all 0.05s ease-in-out;
+    border-radius: 0.5rem;
 }
 .upload-btn:active{
     transform: scale(0.9);

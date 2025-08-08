@@ -3,13 +3,8 @@ import Card from '../../components/Card/Card'
 import Footer from '../../components/Footer/Footer';
 import type { ChangeEvent } from 'react';
 import { uploadFile } from '../../utils/fileHandler'
+import { useNavigate } from 'react-router';
 
-async function handleUploadInput(e: ChangeEvent<HTMLInputElement>){
-  const files = e.target.files;
-  if (files != null && files.length != 0) {
-    uploadFile(files[0])
-  }
-}
 export const cardInfo = [
     {
       title: "Rename columns",
@@ -39,20 +34,33 @@ export const cardInfo = [
   
 
 function Home(){
+    let navigate = useNavigate()
+
+    const handleUploadInput = async (e: ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      const files = e.target.files;
+      if (files != null && files.length != 0) {
+        uploadFile(files[0]).then((data)=>{
+          navigate(`/remapper/${data.file_id}`, {state: {types: data.types}})
+        })
+      }
+    }
+
     return (
         <>
             <div className='content'>
                 <div className='intro'>
                     <h1>CSV REMAPPER</h1>
                     <p>
-                    CSV Remapper is a powerful web tool designed to easily transform and manipulate CSV files using customizable mapping files. Streamline your data workflows and automate common CSV cleaning and transformation tasks.
+                    CSV Remapper is a powerful web tool designed to easily transform and manipulate CSV files using customizable mapping files.<br/>
+                    Streamline your data workflows and automate common CSV cleaning and transformation tasks.
                     </p>
                     <label htmlFor="uploadBtn" className='upload-btn'>UPLOAD FILE</label>
                     <input id='uploadBtn' type='file' accept='.csv,.tsv,.json' onChange={(e) => handleUploadInput(e)}/>
                 </div>
                 <div className='card-grid'>
                     {cardInfo.map(info => (
-                        <Card key={info.title} className='card-item'>
+                        <Card key={info.title} className='card-item' variant='flat'>
                             <h1>{info.title}</h1>
                             <p>{info.body}</p>
                         </Card>
