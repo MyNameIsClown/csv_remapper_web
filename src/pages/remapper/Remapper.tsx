@@ -1,6 +1,9 @@
+import './Remapper.css'
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { getFileInfo } from "../../utils/fileHandler";
+import Footer from "../../components/Footer/Footer";
+import Card from '../../components/Card/Card';
 
 // type RemapperProps = {
 //     data: {}
@@ -9,7 +12,7 @@ import { getFileInfo } from "../../utils/fileHandler";
 function Remapper(){
     let params = useParams();
     let location = useLocation();
-    let [types, setTypes] = useState<any>()
+    let [types, setTypes] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (params.file_id){
@@ -24,9 +27,33 @@ function Remapper(){
     }, [params.file_id, location.state]);
 
     return(
-        <div>
-            
-        </div>
+        <>
+            <div className="remapper-container">
+                <aside>
+                    <div className='tools'>
+                        <button>SAVE</button>
+                        <button>SAVE CONFIG</button>
+                        <button>LOAD CONFIG</button>
+                        <button>HELP</button>
+                    </div>
+                    <div className='operations'>
+                        <button>UPLOAD NEW FILE</button>
+                        <button>BACK</button>
+                    </div>
+                </aside>
+                <div className="rows">
+                    {Object.entries(types).map(([key, value]) => (
+                        <Card variant='flat'>  
+                            {key}: {value}
+                        </Card>
+                    ))}
+                    <Card>
+                        <button>Merge columns</button>
+                    </Card>
+                </div>
+            </div>
+            <Footer></Footer>
+        </>
     )
 }
 

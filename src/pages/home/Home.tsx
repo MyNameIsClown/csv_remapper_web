@@ -60,7 +60,7 @@ function Home(){
                 </div>
                 <div className='card-grid'>
                     {cardInfo.map(info => (
-                        <Card key={info.title} className='card-item' variant='flat'>
+                        <Card key={info.title} className='card-item' variant='gradient'>
                             <h1>{info.title}</h1>
                             <p>{info.body}</p>
                         </Card>

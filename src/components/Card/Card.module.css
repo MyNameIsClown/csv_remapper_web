@@ -1,21 +1,23 @@
-.card{
-    /* Content position */
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    padding: 1.5rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.25s ease-in-out;
-    border-radius: 0.5rem;
+/* Base, participates in layout (never scaled) */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: .75rem;
+  background: #fff;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
-.card:hover{
-    scale: 1.05;
-    transition: all 0.1s ease-in-out;
+
+.cardOverlay {
+  will-change: transform, box-shadow;
+  transform: translateZ(0)
 }
+
 .card--gradient{
-    background: linear-gradient(rgb(26, 92, 79), rgb(5, 31, 26));
+  background: linear-gradient(rgb(26, 92, 79), rgb(5, 31, 26));
 }
 .card--flat{
-    background-color: white;
-    color: rgb(5, 31, 26);
+  background-color: white;
+  color: rgb(5, 31, 26);
 }
