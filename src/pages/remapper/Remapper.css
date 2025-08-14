@@ -1,13 +1,15 @@
-.remapper-container{
+.remapper-container {
     display: flex;
     flex-direction: row;
-    gap: 2rem;
+    gap: 1rem;
     margin: 1rem auto;
-    width:80%;
+    width: 100%;
     height: calc(100vh - 5rem);
+    padding-top: 3rem;
     overflow: hidden;
 }
-aside{
+
+aside {
     flex: 0 0 20rem;
     background-color: #f5f5f5;
     position: sticky;
@@ -18,16 +20,32 @@ aside{
     justify-content: space-between;
     border-radius: 1rem;
 }
-.tools, .operations, .rows{
+
+.tools,
+.operations,
+.rows {
     display: flex;
     flex-direction: column;
     padding: 1rem;
     gap: 1rem;
 }
-.rows{
+
+.rows {
     flex: 1 1 auto;
     min-width: 0;
     overflow-y: auto;
     overflow-x: visible;
     padding: 1rem;
+}
+
+.key_row {
+    background-color: white;
+    margin-block: 1rem;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding: 1rem;
+    gap: 2rem;
+    flex-wrap: wrap;
 }

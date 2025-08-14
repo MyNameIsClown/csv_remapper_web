@@ -1,23 +1,33 @@
-/* Base, participates in layout (never scaled) */
 .card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  border-radius: .75rem;
-  background: #fff;
-  color: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    /* Content position */
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s ease-in-out;
+    border-radius: 0.5rem;
 }
 
-.cardOverlay {
-  will-change: transform, box-shadow;
-  transform: translateZ(0)
+.card:hover {
+    transition: all 0.1s ease-in-out;
 }
 
-.card--gradient{
-  background: linear-gradient(rgb(26, 92, 79), rgb(5, 31, 26));
+.card--gradient {
+    background: linear-gradient(rgb(26, 92, 79), rgb(5, 31, 26));
 }
-.card--flat{
-  background-color: white;
-  color: rgb(5, 31, 26);
+
+.card--gradient:hover {
+    background: linear-gradient(rgb(40, 137, 117), rgb(5, 31, 26));
+    border: 1px solid;
+}
+
+.card--flat {
+    background-color: white;
+    color: rgb(5, 31, 26);
+}
+
+.card--flat:hover {
+    background-color: rgb(235, 234, 234);
+    color: rgb(5, 31, 26);
 }

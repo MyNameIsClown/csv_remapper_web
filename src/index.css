@@ -1,8 +1,9 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
 @import url(https://fonts.googleapis.com/css?family=Sour+Gummy:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
-@import "./css/kola.css";
-@import "./css/sentient.css";
-@import "./css/teko.css";
+@import "./styles/kola.css";
+@import "./styles/sentient.css";
+@import "./styles/teko.css";
+
 html{
   margin: 0;
   padding: 0;
