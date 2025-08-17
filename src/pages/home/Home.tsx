@@ -59,24 +59,7 @@ function Home() {
       })
     }
   }
-  const navItems = ["Cosa 1"]
-  const drawer = (
-    <Box sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        MUI
-      </Typography>
-      <Divider />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={item} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+  const navItems = ["@Víctor Carrasco", "2025"]
 
   return (
     <div className='content'>
@@ -113,7 +96,7 @@ function Home() {
           </Card>
         ))}
       </div>
-      <Navbar drawer={drawer} navItems={navItems} />
+      <Navbar navItems={navItems} />
     </div>
   )
 }
