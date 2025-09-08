@@ -52,3 +52,15 @@ export async function getFileInfo (file_id:string){
     console.error(err);
   }
 };
+
+export async function getTransformationFile (file_id:string, data: any){
+  try {
+    const response = await fetchHandler(`/csv-file/${file_id}/transform`, {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+    return response
+  } catch (err) {
+    console.error(err);
+  }
+}

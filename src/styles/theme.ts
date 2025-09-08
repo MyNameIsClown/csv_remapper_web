@@ -14,7 +14,7 @@ export const theme = createTheme({
         main: 'rgb(32, 114, 98)',
     },
     success: {
-        main: '#ffb16b',
+        main: 'rgb(255,255,255)',
     }
   },
   typography: {

@@ -1,7 +1,7 @@
 import './Remapper.css'
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { getFileInfo } from "../../utils/fileHandler";
+import { getFileInfo, getTransformationFile } from "../../utils/fileHandler";
 import {
     Box,
     Button,
@@ -20,14 +20,16 @@ import FileOpenIcon from "@mui/icons-material/FileOpen";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useLoading } from '../../utils/LoadingContext';
 
 
-type CsvKeyType = "integer" | "float" | "date" | "text";
+type CsvKeyType = "positive_number" | "negative_number" | "datetime" | "text";
 
 type Row = {
     old_key_name: string;
     new_key_name?: string;
-    type: CsvKeyType;
+    old_type: CsvKeyType;
+    new_type: CsvKeyType;
     is_active: boolean;
 };
 
@@ -40,7 +42,8 @@ function normalizeToRows(input: any): Row[] {
         return input.map((r: any) => ({
             old_key_name: String(r.old_key_name ?? r.key_name ?? r.name ?? ""),
             new_key_name: r.new_key_name ?? "",
-            type: (r.type as CsvKeyType) ?? "text",
+            old_type: (r.type as CsvKeyType) ?? "text",
+            new_type: (r.type as CsvKeyType) ?? "text",
             is_active: Boolean(
                 r.is_active ??
                 r.active ??
@@ -59,7 +62,8 @@ function normalizeToRows(input: any): Row[] {
         return input.types.map((t: any) => ({
             old_key_name: String(t.key_name ?? t.name ?? ""),
             new_key_name: "",
-            type: (t.type as CsvKeyType) ?? "text",
+            old_type: (t.type as CsvKeyType) ?? "text",
+            new_type: (t.type as CsvKeyType) ?? "text",
             is_active: Boolean(t.is_active ?? true),
         })).filter((r: Row) => r.old_key_name);
     }
@@ -71,7 +75,8 @@ function normalizeToRows(input: any): Row[] {
             return entries.map(([k, v]) => ({
                 old_key_name: String(k),
                 new_key_name: "",
-                type: (v as CsvKeyType) ?? "text",
+                old_type: (v as CsvKeyType) ?? "text",
+                new_type: (v as CsvKeyType) ?? "text",
                 is_active: true,
             }));
         }
@@ -88,7 +93,8 @@ function Remapper() {
 
     const [rows, setRows] = useState<Row[]>([]);
     const [isToolsOpen, setIsToolsOpen] = useState<boolean>(true);
-    const [loading, setLoading] = useState<boolean>(false);
+    const {isLoading, setLoading} = useLoading()
+    const file_id = params.file_id as string;
 
     // Carga inicial de datos
     useEffect(() => {
@@ -107,8 +113,6 @@ function Remapper() {
                     return;
                 }
 
-                // Si no hay estado, intenta pedir por file_id
-                const file_id = params.file_id as string | undefined;
                 if (file_id) {
                     const data = await getFileInfo(file_id);
                     if (mounted) setRows(normalizeToRows(data));
@@ -132,8 +136,12 @@ function Remapper() {
         });
     };
 
+    const save = () => {
+        getTransformationFile(file_id, rows)
+    }
+
     const btn_actions = [
-        { key: "save", label: "Guardar", icon: <SaveIcon />, color: "primary", onClick: () => {/* TODO guardar */ } },
+        { key: "save", label: "Guardar", icon: <SaveIcon />, color: "primary", onClick: save},
         { key: "savecfg", label: "Guardar configuración", icon: <SaveAsIcon />, color: "primary", onClick: () => {/* TODO guardar cfg */ } },
         { key: "loadcfg", label: "Cargar configuración", icon: <FileOpenIcon />, color: "primary", onClick: () => {/* TODO cargar cfg */ } },
         { key: "help", label: "Ayuda", icon: <HelpOutlineIcon />, color: "secondary", onClick: () => {/* TODO ayuda */ } },
@@ -211,13 +219,13 @@ function Remapper() {
                     px: 2,
                 })}
             >
-                {loading && (
+                {isLoading && (
                     <Typography variant="body2" sx={{ opacity: 0.7, mb: 2 }}>
                         Cargando…
                     </Typography>
                 )}
 
-                {!loading && rows.length === 0 && (
+                {!isLoading && rows.length === 0 && (
                     <Typography variant="body2" sx={{ opacity: 0.7, mb: 2 }}>
                         No hay datos para mostrar.
                     </Typography>
@@ -232,7 +240,7 @@ function Remapper() {
                         />
 
                         <TextField
-                            label="Nombre nuevo"
+                            label={row.old_key_name}
                             name={`rows[${i}][new_key_name]`}
                             value={row.new_key_name ?? ""}
                             onChange={(e) => updateRow(i, { new_key_name: e.target.value })}
@@ -243,21 +251,15 @@ function Remapper() {
                         <Select
                             labelId={`row-type-${i}`}
                             name={`rows[${i}][type]`}
-                            value={row.type ?? "text"}
-                            onChange={(e) => updateRow(i, { type: e.target.value as CsvKeyType })}
+                            value={row.new_type ?? "text"}
+                            onChange={(e) => updateRow(i, { new_type: e.target.value as CsvKeyType })}
                             size="small"
                         >
-                            <MenuItem value="integer">Integer</MenuItem>
-                            <MenuItem value="float">Float</MenuItem>
-                            <MenuItem value="date">Date</MenuItem>
+                            <MenuItem value="positive_number">Positive Number</MenuItem>
+                            <MenuItem value="negative_number">Negative Number</MenuItem>
+                            <MenuItem value="datetime">Date</MenuItem>
                             <MenuItem value="text">Text</MenuItem>
                         </Select>
-
-                        <Box sx={{ ml: "auto" }}>
-                            <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                                Clave original: <b>{row.old_key_name}</b>
-                            </Typography>
-                        </Box>
                     </Card>
                 ))}
 

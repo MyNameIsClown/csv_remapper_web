@@ -1,11 +1,13 @@
 import './Home.css'
 import Card from '../../components/Card/Card'
-import type { ChangeEvent } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import { uploadFile } from '../../utils/fileHandler'
 import { useNavigate } from 'react-router';
-import { Box, Button, Divider, List, ListItem, ListItemButton, ListItemText, styled, Typography } from '@mui/material';
+import { Button, styled} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Navbar from '../../components/NavigationMenu/NavBar';
+import Loading from '../../components/Loading/Loading';
+import { useLoading } from '../../utils/LoadingContext';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -49,12 +51,15 @@ export const cardInfo = [
 
 function Home() {
   let navigate = useNavigate()
+  const {setLoading} = useLoading();
 
   const handleUploadInput = async (e: ChangeEvent<HTMLInputElement>) => {
+    setLoading(true)
     e.preventDefault();
     const files = e.target.files;
     if (files != null && files.length != 0) {
       uploadFile(files[0]).then((data) => {
+        setLoading(false)
         navigate(`/remapper/${data.file_id}`, { state: { types: data.types } })
       })
     }
