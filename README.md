@@ -1,69 +1,147 @@
-# React + TypeScript + Vite
+# 🌐 CSV Remapper — Web Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the **web client** for the CSV Remapper ecosystem.  
+It’s built with **Vite + React + TypeScript** and **MUI** (Material UI), and it connects to the backend **[`csv_remapper_api`](https://github.com/MyNameIsClown/csv_remapper_api)** to remap and transform CSV files through a friendly UI.
 
-Currently, two official plugins are available:
+Ecosystem:
+- [`csv_remapper_lib`](https://github.com/MyNameIsClown/csv_remapper_lib) → Core Python library for CSV transformations.
+- [`csv_remapper_api`](https://github.com/MyNameIsClown/csv_remapper_api) → FastAPI REST backend.
+- **csv_remapper_web** (this repo) → Frontend client in React.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- ⚡️ Vite + React + TypeScript for fast DX
+- 🎨 MUI components with theming
+- 🔌 Configurable API base URL via environment variables
+- 📁 Upload CSVs, preview columns, select/rename types, and transform
+- 🧰 Clean architecture: components/pages/services/types
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 📂 Project Structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+csv-remapper-web/
+├── public/                       # Static assets
+├── src/
+│   ├── assets/                   # Assets
+│   ├── components/               # Reusable UI components
+│   ├── pages/                    # Route-level pages (Home, Transform, etc.)
+│   ├── styles/                   # Styles and theming
+│   ├── utils/                    # Utils and API fetching config
+│   ├── App.tsx                   # App root
+│   └── main.tsx                  # Vite entry
+├── .env_example                  # Example env vars
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Getting Started
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1) Prerequisites
+
+- **Node.js** ≥ 18  
+- A running instance of **csv-remapper-api** (default: `http://localhost:8000`)
+- A package manager: **pnpm** (recommended), **npm** or **yarn**
+
+### 2) Clone
+
+```bash
+git clone https://github.com/MyNameIsClown/csv_remapper_web.git
+cd csv-remapper-web
 ```
+
+### 3) Install dependencies
+
+Using **pnpm** (recommended):
+```bash
+pnpm install
+```
+
+Using **npm**:
+```bash
+npm install
+```
+
+Using **yarn**:
+```bash
+yarn
+```
+
+### 4) Configure environment
+
+Create a `.env` file (you can copy `.env_example`):
+
+```bash
+cp .env_example .env
+```
+
+Edit `.env` and set your API base URL:
+
+```dotenv
+# .env
+VITE_API_BASE_URL="http://localhost:8000"  # csv-remapper-api base URL
+```
+
+### 5) Run in development
+
+With **pnpm**:
+```bash
+pnpm dev
+```
+
+With **npm**:
+```bash
+npm run dev
+```
+
+App will be available at:
+- http://localhost:5173 (default Vite port)
+
+### 6) Build & Preview
+
+```bash
+# Build
+pnpm build
+
+# Preview production build locally
+pnpm preview
+```
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repo
+2. Create a branch: `git checkout -b feat/my-feature`
+3. Commit: `git commit -m "feat: add my feature"`
+4. Push: `git push origin feat/my-feature`
+5. Open a Pull Request
+
+Please:
+- Follow the existing code style
+- Add/keep tests where it makes sense
+- Keep commits meaningful (Conventional Commits recommended)
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.  
+See the [LICENSE](./LICENSE) file for details.
+
+---
+
+## 👥 Maintainers & Collaboration
+
+- **Victor Carrasco** ([@MyNameIsClown](https://github.com/MyNameIsClown)) — creator & maintainer
+
+If you'd like to collaborate, open an issue or a PR. 🚀
