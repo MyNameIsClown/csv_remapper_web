@@ -29,7 +29,7 @@ type Row = {
     old_key_name: string;
     new_key_name?: string;
     old_type: CsvKeyType;
-    new_type: CsvKeyType;
+    new_type: CsvKeyType | "" | null;
     is_active: boolean;
 };
 
@@ -42,8 +42,8 @@ function normalizeToRows(input: any): Row[] {
         return input.map((r: any) => ({
             old_key_name: String(r.old_key_name ?? r.key_name ?? r.name ?? ""),
             new_key_name: r.new_key_name ?? "",
-            old_type: (r.type as CsvKeyType) ?? "text",
-            new_type: (r.type as CsvKeyType) ?? "text",
+            old_type: (r.old_type as CsvKeyType) ?? "text",
+            new_type: (r.new_type as CsvKeyType) ?? "",
             is_active: Boolean(
                 r.is_active ??
                 r.active ??
@@ -62,8 +62,8 @@ function normalizeToRows(input: any): Row[] {
         return input.types.map((t: any) => ({
             old_key_name: String(t.key_name ?? t.name ?? ""),
             new_key_name: "",
-            old_type: (t.type as CsvKeyType) ?? "text",
-            new_type: (t.type as CsvKeyType) ?? "text",
+            old_type: (t.old_type as CsvKeyType) ?? "text",
+            new_type: (t.new_type as CsvKeyType) ?? "",
             is_active: Boolean(t.is_active ?? true),
         })).filter((r: Row) => r.old_key_name);
     }
@@ -76,7 +76,7 @@ function normalizeToRows(input: any): Row[] {
                 old_key_name: String(k),
                 new_key_name: "",
                 old_type: (v as CsvKeyType) ?? "text",
-                new_type: (v as CsvKeyType) ?? "text",
+                new_type: "",
                 is_active: true,
             }));
         }
@@ -131,13 +131,56 @@ function Remapper() {
     const updateRow = (index: number, patch: Partial<Row>) => {
         setRows((prev) => {
             const next = [...prev];
-            next[index] = { ...next[index], ...patch };
+            const current = next[index];
+    
+            let newPatch = { ...patch };
+    
+            // If the change is new_type
+            if (patch.new_type !== undefined) {
+                const v = patch.new_type;
+    
+                // If new_type == old_type set nothing
+                if (v === current.old_type) {
+                    newPatch.new_type = "";
+                }
+            }
+    
+            next[index] = { ...current, ...newPatch };
             return next;
         });
     };
 
+    const saveStreamCSV = (filename: string, text: string) => {
+        if (typeof window === "undefined") return;
+      
+        const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+      
+        // Compatibilidad con IE10+
+        if ((window.navigator as any).msSaveBlob) {
+          (window.navigator as any).msSaveBlob(blob, filename);
+        } else {
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = filename;
+      
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+      
+          URL.revokeObjectURL(url); // 🔑 libera memoria
+        }
+        setLoading(false)
+    };      
+
     const save = () => {
+        setLoading(true)
         getTransformationFile(file_id, rows)
+        .then((response) => saveStreamCSV(`conversion.csv`, response))
+        .catch((error) => {
+            setLoading(false)
+            console.error("CSV saving error:", error)
+        })
     }
 
     const btn_actions = [
@@ -219,12 +262,6 @@ function Remapper() {
                     px: 2,
                 })}
             >
-                {isLoading && (
-                    <Typography variant="body2" sx={{ opacity: 0.7, mb: 2 }}>
-                        Cargando…
-                    </Typography>
-                )}
-
                 {!isLoading && rows.length === 0 && (
                     <Typography variant="body2" sx={{ opacity: 0.7, mb: 2 }}>
                         No hay datos para mostrar.
@@ -251,7 +288,7 @@ function Remapper() {
                         <Select
                             labelId={`row-type-${i}`}
                             name={`rows[${i}][type]`}
-                            value={row.new_type ?? "text"}
+                            value={row.new_type ? row.new_type : row.old_type}
                             onChange={(e) => updateRow(i, { new_type: e.target.value as CsvKeyType })}
                             size="small"
                         >
