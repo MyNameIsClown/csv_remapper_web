@@ -64,3 +64,29 @@ export async function getTransformationFile (file_id:string, data: any){
     console.error(err);
   }
 }
+
+export async function downloadConfigFile (file_id:string, data: any){
+  try {
+    const response = await fetchHandler(`/csv-file/${file_id}/encrypt_config_file`, {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+    return response
+  } catch (err) {
+    console.error(err);
+  }
+}
+export async function uploadConfigFile (file_id:string, uploadFile:File){
+  try {
+    const fileData : FormData = new FormData()
+    fileData.append("file", uploadFile)
+    const response = await fetchHandler(`/csv-file/${file_id}/decrypt_config_file`, {
+      method: "POST",
+      body: fileData,
+    });
+    saveFileId(response["file_id"])
+    return response
+  } catch (err) {
+    console.error(err);
+  }
+};

@@ -1,25 +1,13 @@
 import './Home.css'
 import Card from '../../components/Card/Card'
-import { useState, type ChangeEvent } from 'react';
+import { type ChangeEvent } from 'react';
 import { uploadFile } from '../../utils/fileHandler'
 import { useNavigate } from 'react-router';
-import { Button, styled} from '@mui/material';
+import { Button } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Navbar from '../../components/NavigationMenu/NavBar';
-import Loading from '../../components/Loading/Loading';
 import { useLoading } from '../../utils/LoadingContext';
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
+import VisuallyHiddenInput from '../../components/VisuallyHidenInput';
 
 export const cardInfo = [
   {

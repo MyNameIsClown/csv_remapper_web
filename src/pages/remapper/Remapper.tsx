@@ -1,7 +1,7 @@
 import './Remapper.css'
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { getFileInfo, getTransformationFile } from "../../utils/fileHandler";
+import { downloadConfigFile, getFileInfo, getTransformationFile, uploadConfigFile, uploadFile } from "../../utils/fileHandler";
 import {
     Box,
     Button,
@@ -21,6 +21,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useLoading } from '../../utils/LoadingContext';
+import VisuallyHiddenInput from '../../components/VisuallyHidenInput';
 
 
 type CsvKeyType = "positive_number" | "negative_number" | "datetime" | "text";
@@ -171,6 +172,29 @@ function Remapper() {
           URL.revokeObjectURL(url); // 🔑 libera memoria
         }
         setLoading(false)
+    };    
+
+    const saveStreamConfig = (filename: string, text: string) => {
+        if (typeof window === "undefined") return;
+      
+        const blob = new Blob([text], { type: "text/cfg;charset=utf-8;" });
+      
+        // Compatibilidad con IE10+
+        if ((window.navigator as any).msSaveBlob) {
+          (window.navigator as any).msSaveBlob(blob, filename);
+        } else {
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = filename;
+      
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+      
+          URL.revokeObjectURL(url); // 🔑 libera memoria
+        }
+        setLoading(false)
     };      
 
     const save = () => {
@@ -182,14 +206,39 @@ function Remapper() {
             console.error("CSV saving error:", error)
         })
     }
+    const saveConfigFile = () => {
+        setLoading(true)
+        downloadConfigFile(file_id, rows)
+        .then((response) => saveStreamConfig(`conversion_config.cfg`, response))
+        .catch((error) => {
+            setLoading(false)
+            console.error("CSV saving error:", error)
+        })
+    }
+    const setConfiguration = (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const files = e.target.files;
+        if (files != null && files.length != 0) {
+            setLoading(true);
+            uploadConfigFile(file_id, files[0])
+            .then((response) => {
+                setRows(normalizeToRows(response))
+                setLoading(false)
+            })
+            .catch((error) => {
+                setLoading(false)
+                console.error("CSV saving error:", error)
+            })
+        }
+    }
 
     const btn_actions = [
-        { key: "save", label: "Guardar", icon: <SaveIcon />, color: "primary", onClick: save},
-        { key: "savecfg", label: "Guardar configuración", icon: <SaveAsIcon />, color: "primary", onClick: () => {/* TODO guardar cfg */ } },
-        { key: "loadcfg", label: "Cargar configuración", icon: <FileOpenIcon />, color: "primary", onClick: () => {/* TODO cargar cfg */ } },
-        { key: "help", label: "Ayuda", icon: <HelpOutlineIcon />, color: "secondary", onClick: () => {/* TODO ayuda */ } },
-        { key: "upload", label: "Subir nuevo archivo", icon: <CloudUploadIcon />, color: "secondary", onClick: () => {/* TODO subir */ } },
-        { key: "back", label: "Volver", icon: <ArrowBackIcon />, color: "inherit", onClick: () => { navigate("/"); } },
+        { key: "save", label: "Guardar", icon: <SaveIcon />, color: "primary", onClick: save, isUploadFileBtn: false},
+        { key: "savecfg", label: "Guardar configuración", icon: <SaveAsIcon />, color: "primary", onClick: saveConfigFile, isUploadFileBtn: false},
+        { key: "loadcfg", label: "Cargar configuración", icon: <FileOpenIcon />, color: "primary", onClick: setConfiguration, isUploadFileBtn: true},
+        { key: "help", label: "Ayuda", icon: <HelpOutlineIcon />, color: "secondary", onClick: () => {/* TODO ayuda */ }, isUploadFileBtn: false},
+        { key: "upload", label: "Subir nuevo archivo", icon: <CloudUploadIcon />, color: "secondary", onClick: () => {/* TODO subir */ }, isUploadFileBtn: false},
+        { key: "back", label: "Volver", icon: <ArrowBackIcon />, color: "inherit", onClick: () => { navigate("/"); }, isUploadFileBtn: false},
     ];
     const drawer = (
         <Box sx={{ p: 2 }}>
@@ -197,12 +246,13 @@ function Remapper() {
             <Stack spacing={1} sx={{ display: { xs: "none", sm: "flex" } }}>
                 {btn_actions.map(a => (
                     <Button
+                        component={a.isUploadFileBtn ? "label": "button"}
                         key={a.key}
                         variant="contained"
                         color={a.color as any}
                         startIcon={a.icon}
                         fullWidth
-                        onClick={a.onClick}
+                        onClick={a.isUploadFileBtn ? ()=>{} : a.onClick}
                         sx={{
                             justifyContent: "flex-start",
                             borderRadius: 2,
@@ -211,6 +261,13 @@ function Remapper() {
                         }}
                     >
                         {a.label}
+                        {a.isUploadFileBtn && 
+                            <VisuallyHiddenInput
+                            type="file"
+                            onChange={(e) => a.onClick(e)}
+                            multiple
+                            />
+                        }
                     </Button>
                 ))}
             </Stack>
@@ -230,7 +287,8 @@ function Remapper() {
                 {btn_actions.map(a => (
                     <Tooltip key={a.key} title={a.label} arrow>
                         <IconButton
-                            onClick={a.onClick}
+                            component={a.isUploadFileBtn ? "label": "button"}
+                            onClick={a.isUploadFileBtn ? a.onClick: ()=>{}}
                             size="large"
                             sx={{
                                 borderRadius: 2,
@@ -238,6 +296,13 @@ function Remapper() {
                             }}
                         >
                             {a.icon}
+                            {a.isUploadFileBtn && 
+                                <VisuallyHiddenInput
+                                type="file"
+                                onChange={(e) => a.onClick(e)}
+                                multiple
+                                />
+                            }
                         </IconButton>
                     </Tooltip>
                 ))}
