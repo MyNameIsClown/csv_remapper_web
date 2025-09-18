@@ -22,6 +22,8 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useLoading } from '../../utils/LoadingContext';
 import VisuallyHiddenInput from '../../components/VisuallyHidenInput';
+import { usePopUp } from '../../utils/PopUpContext';
+import { BaseErrorDialog } from '../../components/ErrorDialogs/ErrorDialogs';
 
 
 type CsvKeyType = "positive_number" | "negative_number" | "datetime" | "text";
@@ -94,7 +96,8 @@ function Remapper() {
 
     const [rows, setRows] = useState<Row[]>([]);
     const [isToolsOpen, setIsToolsOpen] = useState<boolean>(true);
-    const {isLoading, setLoading} = useLoading()
+    const {isLoading, setLoading} = useLoading();
+    const {setOpen, setContent} = usePopUp();
     const file_id = params.file_id as string;
 
     // Carga inicial de datos
@@ -203,16 +206,18 @@ function Remapper() {
         .then((response) => saveStreamCSV(`conversion.csv`, response))
         .catch((error) => {
             setLoading(false)
-            console.error("CSV saving error:", error)
+            setContent(<BaseErrorDialog error={error}/>)
+            setOpen(true)
         })
     }
     const saveConfigFile = () => {
         setLoading(true)
         downloadConfigFile(file_id, rows)
-        .then((response) => saveStreamConfig(`conversion_config.cfg`, response))
+        .then((response) => saveStreamConfig(`conversion_config.txt`, response))
         .catch((error) => {
             setLoading(false)
-            console.error("CSV saving error:", error)
+            setContent(<BaseErrorDialog error={error}/>)
+            setOpen(true)
         })
     }
     const setConfiguration = (e: ChangeEvent<HTMLInputElement>) => {
@@ -227,7 +232,8 @@ function Remapper() {
             })
             .catch((error) => {
                 setLoading(false)
-                console.error("CSV saving error:", error)
+                setContent(<BaseErrorDialog error={error}/>)
+                setOpen(true)
             })
         }
     }

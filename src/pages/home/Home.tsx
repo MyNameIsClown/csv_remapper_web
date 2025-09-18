@@ -1,13 +1,15 @@
 import './Home.css'
 import Card from '../../components/Card/Card'
 import { type ChangeEvent } from 'react';
-import { uploadFile } from '../../utils/fileHandler'
+import { saveFileId, uploadFile } from '../../utils/fileHandler'
 import { useNavigate } from 'react-router';
 import { Button } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Navbar from '../../components/NavigationMenu/NavBar';
 import { useLoading } from '../../utils/LoadingContext';
 import VisuallyHiddenInput from '../../components/VisuallyHidenInput';
+import { usePopUp } from '../../utils/PopUpContext';
+import { BaseErrorDialog } from '../../components/ErrorDialogs/ErrorDialogs';
 
 export const cardInfo = [
   {
@@ -40,6 +42,7 @@ export const cardInfo = [
 function Home() {
   let navigate = useNavigate()
   const {setLoading} = useLoading();
+  const {setOpen, setContent} = usePopUp();
 
   const handleUploadInput = async (e: ChangeEvent<HTMLInputElement>) => {
     setLoading(true)
@@ -47,8 +50,13 @@ function Home() {
     const files = e.target.files;
     if (files != null && files.length != 0) {
       uploadFile(files[0]).then((data) => {
+        saveFileId(data["file_id"])
         setLoading(false)
         navigate(`/remapper/${data.file_id}`, { state: { types: data.types } })
+      }).catch((error:Error)=>{
+        setLoading(false)
+        setContent(<BaseErrorDialog error={error}/>)
+        setOpen(true)
       })
     }
   }
